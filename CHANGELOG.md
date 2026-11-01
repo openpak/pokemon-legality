@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## v0.1.1 — 2026-11-01
+
+- `/v1/check` also returns gender, nature, ability, held_item and moves (battle stats and showcase read them).
+
 ## v0.1.0 — 2026-11-01
 
 - Fork of Pretendo PKHaX (`38d76d4`); PKHeX.Core 26.10.18.

@@ -13,9 +13,11 @@ length. Response 200:
 
 ```json
 {"valid": true, "parsed": true, "generation": 6, "species": 650, "form": 0, "level": 1,
- "nickname": "Chespin", "ot": "OPENPAK", "shiny": false, "issues": [], "error": null}
+ "nickname": "Chespin", "ot": "OPENPAK", "shiny": false, "gender": 0, "nature": 3,
+ "ability": 65, "held_item": 0, "moves": [33, 45], "issues": [], "error": null}
 ```
 
+`gender` is PKHeX numbering (0 male, 1 female, 2 genderless); ids are PKHeX game ids.
 `valid=false` carries `issues` such as `PK6:EVs:Invalid`. `error` is set when the bytes are not a
 Pokemon file. 400 bad JSON or base64, 401 wrong key.
 

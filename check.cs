@@ -29,6 +29,11 @@ namespace PKHaX {
 			[JsonPropertyName("nickname")] public string Nickname { get; set; } = "";
 			[JsonPropertyName("ot")] public string OT { get; set; } = "";
 			[JsonPropertyName("shiny")] public bool Shiny { get; set; }
+			[JsonPropertyName("gender")] public int Gender { get; set; }
+			[JsonPropertyName("nature")] public int Nature { get; set; }
+			[JsonPropertyName("ability")] public int Ability { get; set; }
+			[JsonPropertyName("held_item")] public int HeldItem { get; set; }
+			[JsonPropertyName("moves")] public List<int> Moves { get; set; } = new();
 			[JsonPropertyName("issues")] public List<string> Issues { get; set; } = new();
 			[JsonPropertyName("error")] public string? Error { get; set; }
 		}
@@ -80,6 +85,11 @@ namespace PKHaX {
 				res.Nickname = pk.Nickname;
 				res.OT = pk.OriginalTrainerName;
 				res.Shiny = pk.IsShiny;
+				res.Gender = pk.Gender;
+				res.Nature = (int)pk.Nature;
+				res.Ability = pk.Ability;
+				res.HeldItem = pk.HeldItem;
+				foreach (var m in new[] { pk.Move1, pk.Move2, pk.Move3, pk.Move4 }) if (m != 0) res.Moves.Add(m);
 				if (!res.Valid)
 					foreach (var r in la.Results)
 						if (!r.Valid) res.Issues.Add(la.Info.Entity is null ? r.Identifier.ToString() : la.Info.Entity.GetType().Name + ":" + r.Identifier + ":" + r.Judgement);
