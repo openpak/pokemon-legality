@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="dotenv.net" Version="4.0.1" />
     <PackageReference Include="System.Resources.Extensions" Version="10.0.5" />
-    <PackageReference Include="PKHeX.Core" Version="26.3.20" />
+    <PackageReference Include="PKHeX.Core" Version="26.10.18" />
   </ItemGroup>
 
 </Project>

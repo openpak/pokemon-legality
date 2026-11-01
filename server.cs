@@ -71,7 +71,17 @@ namespace PKHaX {
 
 					response.StatusCode = 404;
 
-					if (REQUEST_HANDLERS.ContainsKey(request.HttpMethod)) {
+					if (request.HttpMethod == "GET" && request.Url?.AbsolutePath == "/healthz") {
+						byte[] ok = Encoding.ASCII.GetBytes("ok\n");
+						response.StatusCode = 200;
+						await response.OutputStream.WriteAsync(ok, 0, ok.Length);
+					} else if (request.HttpMethod == "POST" && request.Url?.AbsolutePath == "/v1/check") {
+						var (code, json) = Check.Handle(request);
+						byte[] jb = Encoding.UTF8.GetBytes(json);
+						response.StatusCode = code;
+						response.ContentType = "application/json";
+						await response.OutputStream.WriteAsync(jb, 0, jb.Length);
+					} else if (REQUEST_HANDLERS.ContainsKey(request.HttpMethod)) {
 						Dictionary<string, Func<HttpListenerRequest, byte[]>> methodHandlers = REQUEST_HANDLERS[request.HttpMethod];
 
 						if (request.Url != null && methodHandlers.ContainsKey(request.Url.AbsolutePath)) {
@@ -343,8 +353,11 @@ namespace PKHaX {
 			}
 
 			if (!File.Exists(privateKeyPath)) {
-				Console.WriteLine("File {0} does not exist. Set PKHAX_PRIVATE_KEY_PATH to the path of your RSA 2048 private key PEM", privateKeyPath);
-				System.Environment.Exit(1);
+				// * OpenPak: the game fetches whatever public key we serve, so a missing key is
+				// * generated once and kept (mount the path on a volume so it survives restarts).
+				Console.WriteLine("File {0} does not exist; generating a new RSA 2048 key", privateKeyPath);
+				using var fresh = RSA.Create(2048);
+				File.WriteAllText(privateKeyPath, fresh.ExportPkcs8PrivateKeyPem());
 			}
 
 			try {
