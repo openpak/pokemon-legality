@@ -28,3 +28,14 @@ Party-form trailers are tolerated by PKHeX. Encrypted network forms must be decr
 
 Unchanged from upstream, see [upstream.md](upstream.md) and `server.cs`. The 3DS game POSTs to it;
 the real service token check is still a TODO upstream and here.
+
+## Evidence
+
+- `/v1/check` is exercised by `scripts/smoke.sh` against a legal Chespin (a static XY encounter
+  generated with PKHeX.Core, `testdata/legal.pk6`) and the same file with illegal EVs
+  (`illegal.pk6`, verdict `PK6:EVs:Invalid`).
+- The Gen 6 `/validator/v1/*` protocol is upstream's reverse engineering of `DllGts.cro` and
+  `DllRandomTrade.cro`; a capture from a real 3DS is still needed to confirm it.
+- PKHeX verdicts need the data files as stored. A PKHeX release bump can change verdicts; pin and
+  bump deliberately.
+- The same service answers Gen 4/5 (WFC), Gen 6 (NEX) and future Switch callers, hence `common/`.

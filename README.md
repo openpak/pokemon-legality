@@ -39,9 +39,8 @@ PKHAX_PORT=20170 PKHAX_PRIVATE_KEY_PATH=./private.key ./out/PKHaX
 ## Docs
 
 - [Protocol](docs/protocol.md)
-- [Evidence](docs/evidence.md)
 - [Deploy](docs/deploy.md)
-- [Notes](docs/notes.md)
+- [Provenance](docs/provenance.md)
 - [Upstream README](docs/upstream.md)
 
 ## Licence
