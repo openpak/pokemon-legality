@@ -12,7 +12,7 @@ namespace PKHaX {
 	//   GET  /healthz
 	//
 	// "format" is optional (pk3..pk9, pb7, pb8, pa8, pk9...) and only hints at the generation when
-	// the length alone is ambiguous. Set PKHAX_INTERNAL_KEY to require "X-Internal-Key" on /v1/*.
+	// the length alone is ambiguous. PKHAX_INTERNAL_KEY is required: "X-Internal-Key" must match on /v1/* and /validator/*.
 	static class Check {
 		public sealed class CheckRequest {
 			[JsonPropertyName("data")] public string Data { get; set; } = "";
@@ -54,8 +54,15 @@ namespace PKHaX {
 			_ => EntityContext.Gen9,
 		};
 
-		public static bool Authorized(HttpListenerRequest req) =>
-			string.IsNullOrEmpty(InternalKey) || req.Headers["X-Internal-Key"] == InternalKey;
+		public static bool KeyConfigured => !string.IsNullOrEmpty(InternalKey);
+
+		// Fail closed: with no PKHAX_INTERNAL_KEY nothing is authorised (Main refuses to start
+		// without it). Constant-time compare.
+		public static bool Authorized(HttpListenerRequest req) {
+			if (string.IsNullOrEmpty(InternalKey)) return false;
+			var got = Encoding.UTF8.GetBytes(req.Headers["X-Internal-Key"] ?? "");
+			return System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(got, Encoding.UTF8.GetBytes(InternalKey));
+		}
 
 		public static (int, string) Handle(HttpListenerRequest req) {
 			if (!Authorized(req)) return (401, "{\"error\":\"unauthorized\"}");

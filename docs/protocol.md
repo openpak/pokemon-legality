@@ -2,7 +2,7 @@
 
 ## `POST /v1/check`
 
-Request (JSON, header `X-Internal-Key` when `PKHAX_INTERNAL_KEY` is set):
+Request (JSON, header `X-Internal-Key`, required):
 
 ```json
 {"format": "pk6", "data": "<base64 of the stored, decrypted-format Pokemon file>"}
@@ -27,7 +27,7 @@ Party-form trailers are tolerated by PKHeX. Encrypted network forms must be decr
 ## Gen 6 validator (`/validator/v1/*`)
 
 Unchanged from upstream, see [upstream.md](upstream.md) and `server.cs`. The 3DS game POSTs to it;
-the real service token check is still a TODO upstream and here.
+it needs `X-Internal-Key` like `/v1/*` (401 without). The 3DS service token is not parsed here: the caller must be a trusted front that verified it.
 
 ## Evidence
 

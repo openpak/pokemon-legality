@@ -34,7 +34,7 @@ PKHAX_PORT=20170 PKHAX_PRIVATE_KEY_PATH=./private.key ./out/PKHaX
 | `PKHAX_PORT` | Listen port (image default 20170) |
 | `PKHAX_PRIVATE_KEY_PATH` | RSA 2048 PEM; generated on first start if missing, keep it on a volume |
 | `PKHAX_CERTIFICATE_ID` | Gen 6 certificate id (default 3) |
-| `PKHAX_INTERNAL_KEY` | When set, `/v1/*` requires header `X-Internal-Key` |
+| `PKHAX_INTERNAL_KEY` | Required. `/v1/*` and `/validator/*` need header `X-Internal-Key` with this value |
 
 ## Docs
 

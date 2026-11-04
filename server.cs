@@ -81,6 +81,10 @@ namespace PKHaX {
 						response.StatusCode = code;
 						response.ContentType = "application/json";
 						await response.OutputStream.WriteAsync(jb, 0, jb.Length);
+					} else if (REQUEST_HANDLERS.ContainsKey(request.HttpMethod) && request.Url?.AbsolutePath.StartsWith("/validator/") == true && !Check.Authorized(request)) {
+						// * Same internal key as /v1/*: the caller is a trusted front that verified the
+						// * console's service token, not the console itself.
+						response.StatusCode = 401;
 					} else if (REQUEST_HANDLERS.ContainsKey(request.HttpMethod)) {
 						Dictionary<string, Func<HttpListenerRequest, byte[]>> methodHandlers = REQUEST_HANDLERS[request.HttpMethod];
 
@@ -220,7 +224,8 @@ namespace PKHaX {
 				return CreateValidatorV1ValidateResponse(ValidatorV1ValidateResponseCode.Illegal);
 			}
 
-			// TODO - VERIFY SERVICE TOKEN
+			// * The service token is not checked here: the caller must hold X-Internal-Key (enforced in
+			// * HandleIncomingConnections), i.e. a front that verified the console's token.
 
 			if (request.CertificateID != EXPECTED_CERTIFICATE_ID) {
 				// * This is expected to happen, since the game requests the certificate at the start of a save file
@@ -327,8 +332,6 @@ namespace PKHaX {
 		}
 
 		public static byte[] ValidatorV1PublicKey(HttpListenerRequest req) {
-			// TODO - VERIFY SERVICE TOKEN
-
 			// TODO - Is there a better way to do this? I'm new to C# 💀
 			byte[] publicKeyBytes = RSA_KEY_PAIR.ExportRSAPublicKey();
 			publicKeyBytes = rsaHeader.Concat(publicKeyBytes).ToArray(); // * Add the starting ASN.1 that the game expects and C# doesn't generate...
@@ -432,6 +435,11 @@ namespace PKHaX {
 
 		public static void Main(string[] args) {
 			DotEnv.Load();
+
+			if (!Check.KeyConfigured) {
+				Console.WriteLine("PKHAX_INTERNAL_KEY is required");
+				System.Environment.Exit(1);
+			}
 
 			ImportRSAKey();
 			CreateRequestHandlers();
